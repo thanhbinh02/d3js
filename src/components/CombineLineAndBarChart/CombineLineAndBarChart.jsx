@@ -7,12 +7,22 @@ import {
   select,
   stack,
   stackOrderNone,
+  axisRight,
+  line,
 } from "d3";
 import React, { useEffect, useRef } from "react";
 
 import * as d3 from "d3";
 
-function StackedBarChart({ data, keys, colors, allKeysTest }) {
+function CombineLineAndBarChart({
+  data,
+  keys,
+  colors,
+  allKeysTest,
+  values,
+  labels,
+  uniqueValues,
+}) {
   const svgRef = useRef();
   const wrapperRef = useRef();
 
@@ -31,7 +41,12 @@ function StackedBarChart({ data, keys, colors, allKeysTest }) {
 
     const extent = [
       0,
-      max(layers, (layer) => max(layer, (sequence) => sequence[1])),
+      max(layers, (layer) =>
+        max(layer, (sequence) => {
+          console.log("sequence", sequence);
+          return sequence[1];
+        })
+      ),
     ];
 
     // scales
@@ -123,63 +138,58 @@ function StackedBarChart({ data, keys, colors, allKeysTest }) {
       .attr("transform", `translate(0, ${height})`)
       .call(xAxis);
 
-    const yAxis = axisLeft(yScale);
-    svg.select(".y-axis").call(yAxis);
+    const yAxisLeft = axisLeft(yScale);
+    svg.select(".y-axis-left").call(yAxisLeft);
+
+    const yAxisRight = axisRight(yScale);
+    svg
+      .select(".y-axis-right")
+      .call(yAxisRight)
+      .attr("transform", `translate(${width}, 0)`);
   }, [allKeysTest, colors, data, keys]);
 
+  useEffect(() => {
+    const svg = select(svgRef.current);
+
+    const svgContent = svg.select(".content");
+    const { width, height } = wrapperRef.current.getBoundingClientRect();
+
+    const xScale = scaleLinear()
+      .domain([0, values[0].old_data.length - 1])
+      .range([10, width - 10]);
+
+    const yScale = scaleLinear()
+      .domain([0, max(uniqueValues)])
+      .range([height - 10, 10]);
+
+    const lineGenerator = line()
+      .x((d, index) => xScale(index))
+      .y((d) => yScale(d));
+
+    values.forEach((month, index) => {
+      svgContent
+        .selectAll(`.line-${index}`)
+        .data([month.new_data])
+        .join("path")
+        .attr("class", `line-${index}`)
+        .attr("stroke", month.color)
+        .attr("fill", "none")
+        .attr("d", lineGenerator);
+    });
+  }, [labels, values, uniqueValues]);
+
   return (
-    <div
-      style={{
-        position: "relative",
-      }}
-    >
+    <div>
       <div ref={wrapperRef} style={{ marginBottom: "2rem" }}>
         <svg ref={svgRef}>
+          <g className="content"></g>
           <g className="x-axis" />
-          <g className="y-axis" />
+          <g className="y-axis-left" />
+          <g className="y-axis-right" />
         </svg>
-      </div>
-      <div
-        className="tooltip"
-        style={{
-          position: "absolute",
-          textAlign: "left",
-          padding: "10px",
-          border: "1px solid black",
-          backgroundColor: "white",
-          display: "none",
-        }}
-        ref={tooltipRef}
-      >
-        <span className="item-tooltip"></span>
-        <br />
-        <div
-          style={{
-            display: "flex",
-            alignItems: "center",
-          }}
-        >
-          <p
-            style={{
-              width: "10px",
-              height: "10px",
-              marginRight: "10px",
-            }}
-            className="color-tooltip"
-          />
-
-          <p className="element-tooltip"></p>
-          <span
-            className="percent-tooltip"
-            style={{
-              fontWeight: 600,
-              paddingLeft: "4px",
-            }}
-          ></span>
-        </div>
       </div>
     </div>
   );
 }
 
-export default StackedBarChart;
+export default CombineLineAndBarChart;
