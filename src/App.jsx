@@ -1,8 +1,8 @@
 import "./App.css";
-import WrapperCombineLineAndBarChart from "./components/CombineLineAndBarChart/WrapperCombineLineAndBarChart";
 import WrapperDashLineChart from "./components/DashLIneChart/WrapperDashLineChart";
 import WrapperLineChart from "./components/LIneChart/WrapperLineChart";
 import WrapperStackedBar from "./components/Stack/WrapperStackedBar";
+import { TestFour } from "./components/TestFour/TestFour";
 
 function App() {
   return (
@@ -16,8 +16,9 @@ function App() {
       <div className="mb-3">
         <WrapperDashLineChart />
       </div>
-      <div>
-        <WrapperCombineLineAndBarChart />
+
+      <div className="mb-20">
+        <TestFour />
       </div>
     </>
   );
