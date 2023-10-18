@@ -86,37 +86,6 @@ const colors = {
 };
 
 function WrapperStackedBar() {
-  // const [keys, setKeys] = useState(allKeysTest.map((item) => item.key));
-
-  // return (
-  //   <React.Fragment>
-  //     <h2>Stacked Bar Chart with D3 </h2>
-  //     <StackedBarChart data={data} keys={keys} colors={colors} />
-
-  //     <div className="fields">
-  //       {allKeysTest.map((item) => (
-  //         <div key={item.key} className="field">
-  //           <input
-  //             id={item.key}
-  //             type="checkbox"
-  //             checked={keys.includes(item.key)}
-  //             onChange={(e) => {
-  //               if (e.target.checked) {
-  //                 setKeys(Array.from(new Set([...keys, item.key])));
-  //               } else {
-  //                 setKeys(keys.filter((_key) => _key !== item.key));
-  //               }
-  //             }}
-  //           />
-  //           <label htmlFor={item.key} style={{ color: colors[item.key] }}>
-  //             {item.name}
-  //           </label>
-  //         </div>
-  //       ))}
-  //     </div>
-  //   </React.Fragment>
-  // );
-
   const keys = allKeysTest.map((item) => item.key);
 
   return (
